@@ -7,9 +7,7 @@ var config = {
     storageBucket: "",
     messagingSenderId: "229696284539"
 };
-
 firebase.initializeApp(config);
-
 // Declare database
 var database = firebase.database();
 
@@ -17,7 +15,9 @@ var database = firebase.database();
 var name = "";
 var role = "";
 var startDate = "";
-var monthlyRate = "";
+var monthsWorked = "";
+var monthlyRate = 0;
+var totalBilled = 0;
 
 //Event handler for click on submit
 $("#submit").on("click", function (event) {
@@ -30,36 +30,40 @@ $("#submit").on("click", function (event) {
         name: $("#employee-name").val().trim(),
         role: $("#role").val().trim(),
         startDate: $("#start-date").val().trim(),
+        monthsWorked: $("#months-worked").val().trim(),
         monthlyRate: $("#monthly-rate").val().trim(),
+        totalBilled: $("#total-billed").val().trim()
     }
     // Code for handling the push
     database.ref().push(employeeAdd);
 
     // empty the html fields
     $("#employee-name").val(""),
-        $("#role").val(""),
-        $("#start-date").val(""),
-        $("#monthly-rate").val("")
+    $("#role").val(""),
+    $("#start-date").val(""),
+    $("#months-worked").val(""),
+    $("#monthly-rate").val(""),
+    $("#total-billed").val("")
 
 });
 
 
 database.ref().on("child_added", function (childSnapshot) {
-    // storing the snapshot.val() in a variable for convenience
 
-    var name = $(childSnapshot).val().name;
-    var role = $(childSnapshot).val().role;
-    var startDate = $(childSnapshot).val().startDate;
-    var monthlyRate = $(childSnapshot).val().monthlyRate;
+    var name = childSnapshot.val().name;
+    var role = childSnapshot.val().role;
+    var startDate = childSnapshot.val().startDate;
+    var monthsWorked = childSnapshot.val().monthsWorked;
+    var monthlyRate = childSnapshot.val().monthlyRate;
+    var totalBilled = childSnapshot.val().totalBilled;
 
     // Change the HTML to reflect
-    $("#scheduler> tbody").append("<tr><td>" +
+    $("#scheduler > tbody").append("<tr><td>" +
         name + "</td><td>" +
         role + "</td><td>" +
         startDate + "</td><td>" +
-        monthlyRate + "</td><td>");
+        monthsWorked + "</td><td>" +
+        monthlyRate + "</td><td>") +
+        totalBilled + "</td></tr>";
 
-    // Handle the errors
-    // }, function (errorObject) {
-    //     console.log("Errors handled: " + errorObject.code);
 });
