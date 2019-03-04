@@ -7,77 +7,59 @@ var config = {
     storageBucket: "",
     messagingSenderId: "229696284539"
 };
+
 firebase.initializeApp(config);
 
+// Declare database
 var database = firebase.database();
+
+//Initial values
 var name = "";
 var role = "";
 var startDate = "";
 var monthlyRate = "";
 
+//Event handler for click on submit
 $("#submit").on("click", function (event) {
+
     // Don’t refresh the page
     event.preventDefault();
 
-    name = $("#employee-name").val().trim()
-    role =  $("#role").val().trim()
-    startDate =  $("#start-date").val().trim()
-    monthlyRate = $("#monthly-rate").val().trim()
-
-
+    //variables from input
+    var employeeAdd = {
+        name: $("#employee-name").val().trim(),
+        role: $("#role").val().trim(),
+        startDate: $("#start-date").val().trim(),
+        monthlyRate: $("#monthly-rate").val().trim(),
+    }
     // Code for handling the push
-    database.ref().push({
-        name: name,
-        role: role,
-        startDate: startDate,
-        monthlyRate: monthlyRate,
-        dateAdded: firebase.database.ServerValue.TIMESTAMP
-    });
+    database.ref().push(employeeAdd);
 
-    console.log(name.val());
+    // empty the html fields
+    $("#employee-name").val(""),
+        $("#role").val(""),
+        $("#start-date").val(""),
+        $("#monthly-rate").val("")
 
 });
 
-// Firebase watcher .on("child_added"
-database.ref().on("value", function (snapshot) {
-    // storing the snapshot.val() in a variable for convenience
-    var childAdd = snapshot.val();
 
-    // Console.loging the last user's data
-    console.log(childAdd.name);
-    console.log(childAdd.role);
-    console.log(childAdd.startDate);
-    console.log(childAdd.monthlyRate);
+database.ref().on("child_added", function (childSnapshot) {
+    // storing the snapshot.val() in a variable for convenience
+
+    var name = $(childSnapshot).val().name;
+    var role = $(childSnapshot).val().role;
+    var startDate = $(childSnapshot).val().startDate;
+    var monthlyRate = $(childSnapshot).val().monthlyRate;
 
     // Change the HTML to reflect
-    $("#employee-name").text(childAdd.name);
-    $("#role").text(childAdd.role);
-    $("#start-date").text(childAdd.startDate);
-    $("#monthly-rate").text(childAdd.monthlyRate);
-
-
-});
-
-database.ref().on("child_added", function (snapshot) {
-    // storing the snapshot.val() in a variable for convenience
-    var childAdd = snapshot.val();
-
-    // Console.loging the last user's data
-    console.log(childAdd.name);
-    console.log(childAdd.role);
-    console.log(childAdd.startDate);
-    console.log(childAdd.monthlyRate);
-
-    // Change the HTML to reflect
-    $("#employee-name").text(childAdd.name);
-    $("#role").text(childAdd.role);
-    $("#start-date").text(childAdd.startDate);
-    $("#monthly-rate").text(childAdd.monthlyRate);
+    $("#scheduler> tbody").append("<tr><td>" +
+        name + "</td><td>" +
+        role + "</td><td>" +
+        startDate + "</td><td>" +
+        monthlyRate + "</td><td>");
 
     // Handle the errors
-}, function (errorObject) {
-    console.log("Errors handled: " + errorObject.code);
+    // }, function (errorObject) {
+    //     console.log("Errors handled: " + errorObject.code);
 });
-
-
-
